@@ -113,4 +113,5 @@ class App extends React.Component {
   }
 }
 
+// eslint-disable-next-line react/no-deprecated
 ReactDOM.render(<App />, document.getElementById('example'));
