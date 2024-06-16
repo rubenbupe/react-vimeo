@@ -3,73 +3,17 @@ import PropTypes from 'prop-types';
 import Player from '@vimeo/player';
 import eventNames from './eventNames';
 
-class Vimeo extends React.Component {
-  constructor(props) {
-    super(props);
+// Rewrite Vimeo component as a function component
+function Vimeo(props) {
+  const refContainer = React.useRef(null);
+  const playerRef = React.useRef(null);
+  const prevProps = React.useRef({ ...props });
 
-    this.refContainer = this.refContainer.bind(this);
-  }
-
-  componentDidMount() {
-    this.createPlayer();
-  }
-
-  componentDidUpdate(prevProps) {
-    // eslint-disable-next-line react/destructuring-assignment
-    const changes = Object.keys(this.props).filter((name) => this.props[name] !== prevProps[name]);
-
-    this.updateProps(changes);
-  }
-
-  componentWillUnmount() {
-    this.player.destroy();
-  }
-
-  /**
-   * @private
-   */
-  getInitialOptions() {
-    const { video } = this.props;
-    const videoType = /^https?:/i.test(video) ? 'url' : 'id';
-    /* eslint-disable react/destructuring-assignment */
-    return {
-      [videoType]: video,
-      width: this.props.width,
-      height: this.props.height,
-      autopause: this.props.autopause,
-      autoplay: this.props.autoplay,
-      byline: this.props.showByline,
-      color: this.props.color,
-      controls: this.props.controls,
-      loop: this.props.loop,
-      portrait: this.props.showPortrait,
-      title: this.props.showTitle,
-      muted: this.props.muted,
-      background: this.props.background,
-      responsive: this.props.responsive,
-      dnt: this.props.dnt,
-      speed: this.props.speed,
-      keyboard: this.props.keyboard,
-      pip: this.props.pip,
-      playsinline: this.props.playsInline,
-      quality: this.props.quality,
-      texttrack: this.props.textTrack,
-      transparent: this.props.transparent,
-      end_time: this.props.endTime,
-      vimeo_logo: this.props.vimeoLogo,
-      watch_full_video: this.props.watchFullVideo,
-    };
-    /* eslint-enable react/destructuring-assignment */
-  }
-
-  /**
-   * @private
-   */
-  updateProps(propNames) {
-    const { player } = this;
+  const updateProps = (propNames) => {
+    if (!playerRef.current) return;
+    const player = playerRef.current;
     propNames.forEach((name) => {
-      // eslint-disable-next-line react/destructuring-assignment
-      const value = this.props[name];
+      const value = props[name];
       switch (name) {
         case 'autopause':
           player.setAutopause(value);
@@ -100,11 +44,8 @@ class Vimeo extends React.Component {
           break;
         case 'video':
           if (value) {
-            const { start } = this.props;
+            const { start } = props;
             const loaded = player.loadVideo(value);
-            // Set the start time only when loading a new video.
-            // It seems like this has to be done after the video has loaded, else it just starts at
-            // the beginning!
             if (typeof start === 'number') {
               loaded.then(() => {
                 player.setCurrentTime(start);
@@ -121,34 +62,63 @@ class Vimeo extends React.Component {
           player.setQuality(value);
           break;
         default:
-          // Nothing
+          break;
       }
     });
-  }
+  };
 
-  /**
-   * @private
-   */
-  createPlayer() {
-    const { start, volume, playbackRate } = this.props;
+  const getInitialOptions = () => {
+    const { video } = props;
+    const videoType = /^https?:/i.test(video) ? 'url' : 'id';
 
-    this.player = new Player(this.container, this.getInitialOptions());
+    return {
+      [videoType]: video,
+      width: props.width,
+      height: props.height,
+      autopause: props.autopause,
+      autoplay: props.autoplay,
+      byline: props.showByline,
+      color: props.color,
+      controls: props.controls,
+      loop: props.loop,
+      portrait: props.showPortrait,
+      title: props.showTitle,
+      muted: props.muted,
+      background: props.background,
+      responsive: props.responsive,
+      dnt: props.dnt,
+      speed: props.speed,
+      keyboard: props.keyboard,
+      pip: props.pip,
+      playsinline: props.playsInline,
+      quality: props.quality,
+      texttrack: props.textTrack,
+      transparent: props.transparent,
+      end_time: props.endTime,
+      vimeo_logo: props.vimeoLogo,
+      watch_full_video: props.watchFullVideo,
+    };
+  };
+
+  const createPlayer = () => {
+    const { start, volume, playbackRate } = props;
+
+    playerRef.current = new Player(refContainer.current, getInitialOptions());
 
     Object.keys(eventNames).forEach((dmName) => {
       const reactName = eventNames[dmName];
-      this.player.on(dmName, (event) => {
-        // eslint-disable-next-line react/destructuring-assignment
-        const handler = this.props[reactName];
+      playerRef.current.on(dmName, (event) => {
+        const handler = props[reactName];
         if (handler) {
           handler(event);
         }
       });
     });
 
-    const { onError, onReady } = this.props;
-    this.player.ready().then(() => {
+    const { onError, onReady } = props;
+    playerRef.current.ready().then(() => {
       if (onReady) {
-        onReady(this.player);
+        onReady(playerRef.current);
       }
     }, (err) => {
       if (onError) {
@@ -159,37 +129,41 @@ class Vimeo extends React.Component {
     });
 
     if (typeof start === 'number') {
-      this.player.setCurrentTime(start);
+      playerRef.current.setCurrentTime(start);
     }
 
     if (typeof volume === 'number') {
-      this.updateProps(['volume']);
+      updateProps(['volume']);
     }
 
     if (typeof playbackRate === 'number') {
-      this.updateProps(['playbackRate']);
+      updateProps(['playbackRate']);
     }
-  }
+  };
 
-  /**
-   * @private
-   */
-  refContainer(container) {
-    this.container = container;
-  }
+  React.useEffect(() => {
+    createPlayer();
+    return () => {
+      playerRef.current.destroy();
+    };
+  }, []);
 
-  render() {
-    const { id, className, style } = this.props;
+  React.useEffect(() => {
+    const changes = Object.keys(props).filter((name) => props[name] !== prevProps.current[name]);
+    updateProps(changes);
+    prevProps.current = { ...props };
+  }, [props]);
 
-    return (
-      <div
-        id={id}
-        className={className}
-        style={style}
-        ref={this.refContainer}
-      />
-    );
-  }
+  const { id, className, style } = props;
+
+  return (
+    <div
+      id={id}
+      className={className}
+      style={style}
+      ref={refContainer}
+    />
+  );
 }
 
 if (process.env.NODE_ENV !== 'production') {

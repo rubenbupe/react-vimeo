@@ -11,6 +11,7 @@ module.exports = {
     'react/require-default-props': 'off',
     // Our babel config doesn't support class properties
     'react/state-in-constructor': 'off',
+    'react/destructuring-assignment': 'off',
     'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
     'jsx-a11y/label-has-for': ['error', {
       components: [],
