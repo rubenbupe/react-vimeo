@@ -55,6 +55,7 @@ class Vimeo extends React.Component {
       quality: this.props.quality,
       texttrack: this.props.textTrack,
       transparent: this.props.transparent,
+      endTime: this.props.endTime,
     };
     /* eslint-enable react/destructuring-assignment */
   }
@@ -348,6 +349,12 @@ if (process.env.NODE_ENV !== 'production') {
      * by default, to disable set this parameter to false.
      */
     transparent: PropTypes.bool,
+
+    /**
+     * The time in seconds at which to end playing the video.
+     * This is useful for setting a specific section of the video to play.
+     */
+    endTime: PropTypes.number,
 
     // Events
     /* eslint-disable react/no-unused-prop-types */

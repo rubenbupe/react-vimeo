@@ -34,8 +34,8 @@
   "homepage": "https://github.com/u-wave/react-vimeo#readme",
   "dependencies": {
     "@types/react": "^17.0.0 || ^18.0.0",
-    "@types/vimeo__player": "^2.10.0",
-    "@vimeo/player": "^2.16.4",
+    "@types/vimeo__player": "^2.18.3",
+    "@vimeo/player": "^2.23.0",
     "prop-types": "^15.7.2"
   },
   "peerDependencies": {
