@@ -55,7 +55,9 @@ class Vimeo extends React.Component {
       quality: this.props.quality,
       texttrack: this.props.textTrack,
       transparent: this.props.transparent,
-      endTime: this.props.endTime,
+      end_time: this.props.endTime,
+      vimeo_logo: this.props.vimeoLogo,
+      watch_full_video: this.props.watchFullVideo,
     };
     /* eslint-enable react/destructuring-assignment */
   }
@@ -355,6 +357,16 @@ if (process.env.NODE_ENV !== 'production') {
      * This is useful for setting a specific section of the video to play.
      */
     endTime: PropTypes.number,
+
+    /**
+     * Show the Vimeo logo on the video.
+     */
+    vimeoLogo: PropTypes.bool,
+
+    /**
+     * Show the Watch full video button for Segmented Playback.
+      */
+    watchFullVideo: PropTypes.bool,
 
     // Events
     /* eslint-disable react/no-unused-prop-types */

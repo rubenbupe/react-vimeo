@@ -284,6 +284,23 @@ export interface VimeoProps {
    */
   transparent?: boolean
 
+	/**
+	 * The time in seconds at which to end playing the video.
+	 * This is useful for setting a specific section of the video to play.
+	 */
+	endTime?: number
+
+	/**
+	 * Show the Vimeo logo.
+	 */
+	vimeoLogo?: boolean
+
+
+	/**
+	 * Show the Watch full video button for Segmented Playback.
+	 */
+	watchFullVideo?: boolean
+
   /**
    * Sent when the Vimeo player API has loaded.
    * Receives the Vimeo player object in the first parameter.
