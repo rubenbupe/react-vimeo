@@ -143,9 +143,7 @@ function Vimeo(props) {
 
   React.useEffect(() => {
     createPlayer();
-    return () => {
-      playerRef.current.destroy();
-    };
+		// Don't destroy player on unmount because it will cause undesired behavior with StrictMode
   }, []);
 
   React.useEffect(() => {
